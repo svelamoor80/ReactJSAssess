@@ -76,7 +76,7 @@ class ToDoList extends React.Component {
         null,
         this.state.todoList.map((item, index) => {
           return (
-            el(Todo, { key: index, handleChange: this.handleChange, handleDelete: this.handleDelete, item: item })
+            el(Todo, { key: index, handleChange: this.handleChange, handleDelete: this.handleDelete, item: item, index: index })
           )
         }),
         this.state.renderNewTodo ? el(CreateToDo, { updateList: this.updateList }) : ""
@@ -92,7 +92,7 @@ function Todo(props) {
       el('span',
         { className: 'checkbox' },
         el('input',
-          { type: 'checkbox', onChange: function (e) { props.handleChange(props.key, e) } }
+          { type: 'checkbox', onChange: function (e) { props.handleChange(props.index, e) } }
         )
       ),
       " ",
@@ -101,7 +101,7 @@ function Todo(props) {
       el('span',
         { className: classNames.TODO_DELETE },
         el('button',
-          { onClick: function (e) { props.handleDelete(props.key, e) }, className: 'button center' }, 'X'
+          { onClick: function (e) { props.handleDelete(props.index, e) }, className: 'button center' }, 'X'
         )
       )
     )
