@@ -34,11 +34,11 @@ class ToDoList extends React.Component {
     itemCountSpan.innerText = this.state.todoList.length;
   }
 
-  updateList(value) {
+  updateList(value, enterPressed) {
     this.setState(
       {
         todoList: [...this.state.todoList, { todoItem: value, checked: false }],
-        renderNewTodo: false
+        renderNewTodo: enterPressed
       },
       () => {
         this.updateTotalCount();
@@ -119,12 +119,14 @@ class CreateToDo extends React.Component {
   handleKeyPress(e) {
     let key = e.which || e.keyCode;
     if (key === 13 && e.target.value.length) {
-      this.handleSave();
+      const enterPressed = true;
+      this.handleSave(enterPressed);
     }
   }
 
-  handleSave() {
-    this.props.updateList(document.getElementById('inputField').value);
+  handleSave(enterPressed, e) {
+    this.props.updateList(document.getElementById('inputField').value, enterPressed);
+    this.textInputRef.current.value = "";
   }
 
   componentDidMount() {
@@ -149,7 +151,7 @@ class CreateToDo extends React.Component {
           }),
         el('button',
           {
-            onClick: this.handleSave.bind(this),
+            onClick: this.handleSave.bind(this, false),
             className: 'button center',
             style: { position: 'absolute', right: '20px', top: '8px' }
           },
