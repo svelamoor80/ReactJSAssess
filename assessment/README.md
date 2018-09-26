@@ -19,3 +19,31 @@ Good luck!
 
 ## Challenge! (Not Required)
 If you finish early and are up for a challenge, try adding delete functionality. This should be in the form of a button within each TODO that removes that TODO when clicked. 
+
+## Features Implemented
+
+* Clicking on `New TODO` button creates an new editable todo item.
+* Pressing `Enter` key in the keyboard will save the new todo item to the list and create a new editable field.
+* Clicking on `✓` button will save the new todo item.
+* Each todo item in the field has a checkbox to mark completed and an `X` button to delete that todo item from the list.
+* There are two counters - `Item Count` and `Unchecked Count`. `Item Count` keeps track of no. of items in the list. `Unchecked Count` keeps track of unchecked items in the list.
+
+## Components
+* Parent component - `ToDoList`
+
+    ToDoList maintains the state of the Todo list and also holds handler for save(`✓`), delete(`X`) and the counters - `Item Count` and `Unchecked count`.
+* Child components - `Todo` and `CreateToDo`
+
+    * `Todo` - renders each item in the list and receives function props for checkbox and delete features.
+
+    * `CreateTodo` - renders the editable field for entering a new todo item and receives function prop for saving the item to the list.
+
+## To run
+Open the file in any browser.
+
+
+
+
+
+
+## Thanks for the opportunity to work on this assessment.
