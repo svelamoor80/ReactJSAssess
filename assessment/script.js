@@ -1,3 +1,5 @@
+'use strict';
+
 const classNames = {
   TODO_ITEM: 'todo-container',
   TODO_CHECKBOX: 'todo-checkbox',
@@ -8,7 +10,152 @@ const classNames = {
 const list = document.getElementById('todo-list')
 const itemCountSpan = document.getElementById('item-count')
 const uncheckedCountSpan = document.getElementById('unchecked-count')
+const el = React.createElement;
 
 function newTodo() {
-  alert('New TODO button clicked!')
+  ReactDOM.render(el(ToDoList, { renderNewTodo: true }), list);
+}
+
+class ToDoList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      todoList: [],
+      renderNewTodo: this.props.renderNewTodo
+    }
+    this.updateList = this.updateList.bind(this);
+    this.updateTotalCount = this.updateTotalCount.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.updateUncheckedCount = this.updateUncheckedCount.bind(this);
+  }
+
+  updateTotalCount() {
+    itemCountSpan.innerText = this.state.todoList.length;
+  }
+
+  updateList(value) {
+    this.setState(
+      {
+        todoList: [...this.state.todoList, { todoItem: value, checked: false }],
+        renderNewTodo: false
+      },
+      () => {
+        this.updateTotalCount();
+        this.updateUncheckedCount();
+      }
+    )
+  }
+
+  updateUncheckedCount() {
+    uncheckedCountSpan.innerText = this.state.todoList.filter((item) => { return !item.checked }).length;
+  }
+
+  handleChange(index, e) {
+    let todoList = this.state.todoList;
+    todoList[index].checked = e.target.checked;
+    this.setState({ todoList }, this.updateUncheckedCount());
+  }
+
+  handleDelete(index, e) {
+    let todoList = this.state.todoList.slice();
+    todoList.splice(index, 1);
+    this.setState({ todoList }, () => {
+      this.updateTotalCount();
+      this.updateUncheckedCount();
+    });
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({ renderNewTodo: props.renderNewTodo });
+  }
+
+  render() {
+    return (
+      el('div',
+        null,
+        this.state.todoList.map((item, index) => {
+          return (
+            el(Todo, { key: index, handleChange: this.handleChange, handleDelete: this.handleDelete, item: item })
+          )
+        }),
+        this.state.renderNewTodo ? el(CreateToDo, { updateList: this.updateList }) : ""
+      )
+    )
+  }
+}
+
+function Todo(props) {
+  return (
+    el('li',
+      { style: { position: 'relative' }, className: classNames.TODO_ITEM },
+      el('span',
+        { className: 'checkbox' },
+        el('input',
+          { type: 'checkbox', onChange: function (e) { props.handleChange(props.key, e) } }
+        )
+      ),
+      " ",
+      props.item.todoItem,
+      " ",
+      el('span',
+        { className: classNames.TODO_DELETE },
+        el('button',
+          { onClick: function (e) { props.handleDelete(props.key, e) }, className: 'button center' }, 'X'
+        )
+      )
+    )
+  )
+}
+
+class CreateToDo extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleSave = this.handleSave.bind(this);
+    this.textInputRef = React.createRef();
+  }
+
+  handleKeyPress(e) {
+    let key = e.which || e.keyCode;
+    if (key === 13 && e.target.value.length) {
+      this.handleSave();
+    }
+  }
+
+  handleSave() {
+    this.props.updateList(document.getElementById('inputField').value);
+  }
+
+  componentDidMount() {
+    this.textInputRef.current.focus();
+  }
+
+  render() {
+    return (
+      el('div',
+        {
+          id: 'newTodo',
+          className: classNames.TODO_TEXT,
+          style: { position: 'relative' }
+        },
+        el('input',
+          {
+            type: 'text',
+            id: 'inputField',
+            placeholder: 'Enter a todo item',
+            ref: this.textInputRef,
+            onKeyPress: this.handleKeyPress.bind(this)
+          }),
+        el('button',
+          {
+            onClick: this.handleSave.bind(this),
+            className: 'button center',
+            style: { position: 'absolute', right: '20px', top: '8px' }
+          },
+          '\u2713'
+        )
+      )
+    )
+  }
 }
